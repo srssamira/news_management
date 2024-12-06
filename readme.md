@@ -8,13 +8,13 @@ O projeto é estruturado utilizando a Arquitetura Hexagonal (Ports and Adapters)
 
 - `/domain:` Contém a lógica de negócio e as entidades principais.
 - `/domain/models:` NewsItem
-- `/domain/dtos:` NewsVerificationRequestDTO, NewsVerificationResponseDTO, NewsRegisterDTO
-- `/domain/usecases:` NewsVerificationUseCase, NewsRegisterUseCase
+- `/domain/dtos:` NewsVerificationRequestDTO, NewsVerificationResponseDTO, NewsRegisterDTO, NewsItemSearchDTO
+- `/domain/usecases:` NewsVerificationUseCase, NewsRegisterUseCase, NewsItemSearchUseCase
 
 - `/app:` Camada de aplicação, intercede os domínios de os adaptadores.
 - `/app/ports:` Entrada (NewsController)
 - `/app/infra:` Interface que define ponto de interação entre o domain e os adapters
-- `/app/adapters:` Saída (NewsItemRepository), implementações (NewsAdapters, NewsVerificationAdapters).
+- `/app/adapters:` Saída (NewsItemRepository), implementações (NewsAdapters, NewsVerificationAdapters), API externa (ExternalApiNewsAdapter).
 
 
 ### 2. Estrutura do Projeto
@@ -61,6 +61,20 @@ Long id: ID da notícia.
 String classification: Classificação da notícia (high confidence, medium confidence, low confidence, high suspicion.).
 int score: Pontuação calculada.
 String url: URL da notícia verificada.
+```
+```
+Métodos:
+Getters e setters para os atributos.
+```
+- NewsItemSearchDTO:
+  Representa o resultado da busca por keyword.
+```
+Atributos:
+
+- Long id: ID notícia.
+- String url: URL da notícia.
+- String text: Texto completo da notícia.
+- LocalDate publicationDate: Data de publicação da notícia.
 ```
 ```
 Métodos:
@@ -147,6 +161,25 @@ response - 404:
   "error": "News not found"
 }
 ```
+GET `/api/news/search?keyword=keyword`:
+Procura notícia por palavra chave
+```
+response - 200
+
+{
+  "id": 1,
+  "url": "https://www.example.com/news",
+  "text": "Texto completo da notícia.",
+  "publicationDate": "2024-12-12"
+}
+
+
+response - 404:
+{
+  "error": "News not found"
+}
+```
+
 2.2.2. /infra
 
 - NewsItemRepository:
@@ -160,17 +193,16 @@ NewsItem save(NewsItem newsItem): Salva uma notícia no banco de dados.
 ```
 
 2.2.3. /adapters
-NewsVerificationAdapter:
-Implementa a lógica de classificação com base na matriz de regras.
-```
-Métodos:
-NewsVerificationResponseDTO verificarNoticia(NewsVerificationRequestDTO requestDTO, Long id)
-```
+- NewsVerificationAdapter
+- NewsAdapter
+- ExternalApiNewsAdapter: Integração com API externa
+
 
 
 ### 3. Fluxo de Requisição
 - O cliente faz uma requisição POST para o endpoint /api/news para registrar uma notícia.
 - O cliente faz uma requisição POST para o endpoint /api/news/verify para verificar a confiabilidade da notícia.
+- O cliente faz uma requisição GET para o endpoint /api/news/search?keyword="keyword", e se a palavra chave exisitr em alguma notícia do banco de dados, retorna aquela notícia; do contrário, busca na API externa, registra ela no banco de dados e retorna a notícia registrada.
 - O NewsController valida os dados e invoca os serviços correspondentes.
 
 
