@@ -13,5 +13,9 @@ public class NewsRegisterUseCaseImpl implements NewsRegisterUseCase {
         this.newsItemRepository = newsItem;
     }
 
+    //registrar noticia
+    public NewsItem registerNews(NewsRegisterDTO newsRegisterDTO) {
+
+    }
 }
 
