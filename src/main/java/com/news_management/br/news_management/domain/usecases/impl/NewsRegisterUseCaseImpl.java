@@ -16,6 +16,13 @@ public class NewsRegisterUseCaseImpl implements NewsRegisterUseCase {
     //registrar noticia
     public NewsItem registerNews(NewsRegisterDTO newsRegisterDTO) {
 
+        //converter dto
+        NewsItem newsItem = new NewsItem();
+        newsItem.setUrl(newsRegisterDTO.getUrl());
+        newsItem.setText(newsRegisterDTO.getText());
+        newsItem.setPublicationDate(LocalDate.parse(newsRegisterDTO.getPublicationDate()));
+
+
     }
 }
 
