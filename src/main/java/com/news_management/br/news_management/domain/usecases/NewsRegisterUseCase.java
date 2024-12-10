@@ -9,4 +9,7 @@ public interface NewsRegisterUseCase {
     //buscar id
     Optional<NewsItem> findById(Long id);
 
+    //salvar noticia
+    NewsItem save(NewsItem newsItem);
+
 }
