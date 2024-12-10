@@ -1,29 +1,14 @@
-package com.news_management.br.news_management.domain.models;
-
-import jakarta.persistence.*;
+package com.news_management.br.news_management.domain.dtos;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "news_item")
-public class NewsItem {
+public class NewsAPIResponseDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String url;
     private String text;
     private LocalDate publicationDate;
 
-    public NewsItem() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public NewsAPIResponseDTO() {
     }
 
     public String getUrl() {
