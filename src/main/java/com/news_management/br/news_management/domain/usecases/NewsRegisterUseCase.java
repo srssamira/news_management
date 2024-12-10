@@ -6,5 +6,7 @@ import java.util.Optional;
 
 public interface NewsRegisterUseCase {
 
+    //buscar id
+    Optional<NewsItem> findById(Long id);
 
 }
