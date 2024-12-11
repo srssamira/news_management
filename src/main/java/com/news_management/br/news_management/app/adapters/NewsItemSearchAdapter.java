@@ -23,6 +23,7 @@ public class NewsItemSearchUseCaseImpl implements NewsItemSearchUseCase {
 
     @Override
     public Optional<NewsItemSearchDTO> findByKeyword(String keyword) {
+        //
         Optional<NewsItem> newsItemOptional = newsItemRepository.findByKeyword(keyword);
 
         if (newsItemOptional.isPresent()) {
