@@ -104,4 +104,21 @@ public class NewsRegisterUseCaseImplTest {
         verifyNoInteractions(newsItemRepository);
     }
 
+    @Test
+    void registerNews_repositoryReturnsNull_throwsException() {
+
+        NewsRegisterDTO newsRegisterDTO = new NewsRegisterDTO();
+        newsRegisterDTO.setUrl("https://www.example.com/news");
+        newsRegisterDTO.setText("Texto da notícia");
+        newsRegisterDTO.setPublicationDate(LocalDate.now());
+
+
+        when(newsItemRepository.save(any(NewsItem.class))).thenReturn(null);
+
+
+        NullPointerException exception = assertThrows(NullPointerException.class, () ->
+                newsRegisterUseCase.registerNews(newsRegisterDTO)
+        );
+        assertEquals("Failed to save the news item.", exception.getMessage());
+    }
 }
