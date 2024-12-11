@@ -10,9 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -48,6 +46,8 @@ public class ExternalApiNewsAdapterTest {
         newsItem.setUrl("https://newsapi.com/");
         newsItem.setText("Bolsonaro foi preso");
         newsItem.setPublicationDate(LocalDate.now());
+
+        when(mapper.convertValue(apiResponse, NewsItem.class)).thenReturn(newsItem);
     }
 
     @Test
@@ -58,8 +58,6 @@ public class ExternalApiNewsAdapterTest {
         when(restTemplate.getForEntity(anyString(), eq(NewsAPIResponseDTO[].class)))
                 .thenReturn(responseEntity);
 
-        when(mapper.convertValue(any(NewsAPIResponseDTO.class), eq(NewsItem.class)))
-                .thenReturn(newsItem);
 
         Optional<NewsItem> newsItemOptional = apiNewsAdapter.findNewsItemByKeyword("preso");
 
@@ -82,7 +80,12 @@ public class ExternalApiNewsAdapterTest {
 
         Optional<NewsItem> newsItemOptional = apiNewsAdapter.findNewsItemByKeyword("preso");
 
-        assertThrows(RuntimeException.class, () -> newsItemOptional.get());
+        assertFalse(newsItemOptional.isPresent());
+        verify(restTemplate, times(1))
+                .getForEntity(anyString(), eq(NewsAPIResponseDTO[].class));
+        verify(mapper, times(1))
+                .convertValue(any(NewsAPIResponseDTO.class), eq(NewsItem.class));
     }
+
 
 }
