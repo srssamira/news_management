@@ -87,6 +87,21 @@ public class NewsRegisterUseCaseImplTest {
         verifyNoInteractions(newsItemRepository);
     }
 
+    @Test
+    void registerNews_invalidPublicationDate_throwsException() {
 
+        NewsRegisterDTO newsRegisterDTO = new NewsRegisterDTO();
+        newsRegisterDTO.setUrl("https://www.example.com/news");
+        newsRegisterDTO.setText("Texto da notícia");
+        newsRegisterDTO.setPublicationDate(LocalDate.now().plusDays(1));
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                newsRegisterUseCase.registerNews(newsRegisterDTO)
+        );
+        assertEquals("Invalid publication date.", exception.getMessage());
+
+        verifyNoInteractions(newsItemRepository);
+    }
 
 }
