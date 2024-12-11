@@ -50,4 +50,4 @@ public class NewsVerificationRequestDTO {
     public void setHaveSensacionalistLanguage(boolean haveSensacionalistLanguage) {
         this.haveSensacionalistLanguage = haveSensacionalistLanguage;
     }
-}
+
