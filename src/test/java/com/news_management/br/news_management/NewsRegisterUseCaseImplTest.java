@@ -56,5 +56,21 @@ public class NewsRegisterUseCaseImplTest {
         assertEquals(LocalDate.now(), capturedNewsItem.getPublicationDate());
     }
 
+    @Test
+    void registerNews_missingUrl_throwsException() {
+
+        NewsRegisterDTO newsRegisterDTO = new NewsRegisterDTO();
+        newsRegisterDTO.setText("Texto da notícia");
+        newsRegisterDTO.setPublicationDate(LocalDate.now());
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                newsRegisterUseCase.registerNews(newsRegisterDTO)
+        );
+        assertEquals("The 'url' field is mandatory.", exception.getMessage());
+
+        verifyNoInteractions(newsItemRepository);
+    }
+
 
 }
