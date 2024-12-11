@@ -72,5 +72,21 @@ public class NewsRegisterUseCaseImplTest {
         verifyNoInteractions(newsItemRepository);
     }
 
+    @Test
+    void registerNews_missingText_throwsException() {
+
+        NewsRegisterDTO newsRegisterDTO = new NewsRegisterDTO();
+        newsRegisterDTO.setUrl("https://www.example.com/news");
+        newsRegisterDTO.setPublicationDate(LocalDate.now());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                newsRegisterUseCase.registerNews(newsRegisterDTO)
+        );
+        assertEquals("The 'text' field is mandatory.", exception.getMessage());
+
+        verifyNoInteractions(newsItemRepository);
+    }
+
+
 
 }
