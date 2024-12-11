@@ -27,4 +27,34 @@ public class NewsRegisterUseCaseImplTest {
         newsRegisterUseCase = new NewsRegisterUseCaseImpl(newsItemRepository);
     }
 
+    @Test
+    void registerNews_success() {
+
+        NewsRegisterDTO newsRegisterDTO = new NewsRegisterDTO();
+        newsRegisterDTO.setUrl("https://www.example.com/news");
+        newsRegisterDTO.setText("Texto da notícia");
+        newsRegisterDTO.setPublicationDate(LocalDate.now());
+
+        NewsItem savedNewsItem = new NewsItem();
+        savedNewsItem.setId(1L);
+
+        // comportamento do mock
+        when(newsItemRepository.save(any(NewsItem.class))).thenReturn(savedNewsItem);
+
+        Long newsId = newsRegisterUseCase.registerNews(newsRegisterDTO);
+
+        assertNotNull(newsId);
+        assertEquals(1L, newsId);
+
+        // captura os argumentos para validar os dados persistidos
+        ArgumentCaptor<NewsItem> captor = ArgumentCaptor.forClass(NewsItem.class);
+        verify(newsItemRepository).save(captor.capture());
+
+        NewsItem capturedNewsItem = captor.getValue();
+        assertEquals("https://www.example.com/news", capturedNewsItem.getUrl());
+        assertEquals("News Test", capturedNewsItem.getText());
+        assertEquals(LocalDate.now(), capturedNewsItem.getPublicationDate());
+    }
+
+
 }
