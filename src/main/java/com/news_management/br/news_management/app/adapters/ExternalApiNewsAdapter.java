@@ -1,14 +1,13 @@
 package com.news_management.br.news_management.app.adapters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.news_management.br.news_management.app.infra.ApiFailedException;
 import com.news_management.br.news_management.domain.dtos.NewsAPIResponseDTO;
 import com.news_management.br.news_management.domain.models.NewsItem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
@@ -45,14 +44,20 @@ public class ExternalApiNewsAdapter {
 
 
     private Optional<NewsItem> checkApiResponse(ResponseEntity<NewsAPIResponseDTO[]> apiResponse) {
-        if (apiResponse == null)
+
+        if (apiResponse == null || apiResponse.getBody() == null)
             return Optional.empty();
 
         HttpStatus responseHttpStatus = (HttpStatus) apiResponse.getStatusCode();
 
         if (responseHttpStatus.is2xxSuccessful()) {
             NewsAPIResponseDTO[] newsAPIResponseDTOs = apiResponse.getBody();
-            return Optional.of(mapper.convertValue(newsAPIResponseDTOs, NewsItem.class));
+
+            if (newsAPIResponseDTOs.length > 0)
+                return Optional.of(toNewsItem(newsAPIResponseDTOs[0]));
+
+            else
+                return Optional.empty();
         }
 
         else if (responseHttpStatus.is4xxClientError())
@@ -70,10 +75,7 @@ public class ExternalApiNewsAdapter {
             return restTemplate.getForEntity(url, NewsAPIResponseDTO[].class);
         }
         catch (ApiFailedException apiFailedException) {
-            throw new ApiFailedException("http error: " + apiFailedException.getStatusCode(), apiFailedException);
-        }
-        catch (ApiFailedException apiFailedException) {
-            throw new ApiFailedException("api error: ", + apiFailedException.getMessage(), apiFailedException);
+            throw new ApiFailedException("api error" + apiFailedException.getMessage());
         }
     }
 
