@@ -24,11 +24,11 @@ public class NewsVerificationUseCaseImpl implements NewsVerificatoinUseCase {
         if (request.isHaveTrustedSource()) {
             score += 5;
         } else {
-            score -= 3;
+            score = score - 3;
         }
 
         if (request.isHaveSensacionalistLanguage()) {
-            score -= 3;
+            score = score - 3;
         }
 
         if (score >= 8) {
