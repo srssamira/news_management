@@ -17,45 +17,72 @@ import java.util.Optional;
 public class ExternalApiNewsAdapter {
 
     private static final String URL_API = "http://servicodados.ibge.gov.br/api/v3/noticias/";
-
     private final RestTemplate restTemplate;
-
     private final ObjectMapper mapper;
 
     public ExternalApiNewsAdapter(RestTemplate restTemplate, ObjectMapper mapper) {
-        this.mapper = mapper;
         this.restTemplate = restTemplate;
+        this.mapper = mapper;
     }
 
+
+
     public Optional<NewsItem> findNewsItemByKeyword(String keyword) {
-        String url = UriComponentsBuilder
-                .fromPath(URL_API)
+        String url = buildUrlApi(keyword);
+        ResponseEntity<NewsAPIResponseDTO[]> apiResponse = searchNewsFromApi(url);
+        return checkApiResponse(apiResponse);
+    }
+
+
+
+    private String buildUrlApi(String keyword) {
+        return UriComponentsBuilder
+                .fromUriString(URL_API)
                 .queryParam("busca", keyword)
                 .toUriString();
+    }
 
+
+
+    private Optional<NewsItem> checkApiResponse(ResponseEntity<NewsAPIResponseDTO[]> apiResponse) {
+        if (apiResponse == null)
+            return Optional.empty();
+
+        HttpStatus responseHttpStatus = (HttpStatus) apiResponse.getStatusCode();
+
+        if (responseHttpStatus.is2xxSuccessful()) {
+            NewsAPIResponseDTO[] newsAPIResponseDTOs = apiResponse.getBody();
+            return Optional.of(mapper.convertValue(newsAPIResponseDTOs, NewsItem.class));
+        }
+
+        else if (responseHttpStatus.is4xxClientError())
+            return Optional.empty();
+
+
+        else
+            throw new ApiFailedException("Api error with satus code: " + responseHttpStatus);
+    }
+
+
+
+    private ResponseEntity<NewsAPIResponseDTO[]> searchNewsFromApi(String url) {
         try {
-            ResponseEntity<NewsAPIResponseDTO[]> apiResponse = restTemplate
-                    .getForEntity(url, NewsAPIResponseDTO[].class);
-
-            if (apiResponse.getStatusCode().is2xxSuccessful()) {
-                NewsAPIResponseDTO[] newsApiItems = apiResponse.getBody();
-                if (newsApiItems.length > 0 && newsApiItems != null) {
-                    return Optional.of(toNewsItem(newsApiItems[0]));
-                } else return Optional.empty();
-
-            } else if (apiResponse.getStatusCode() == HttpStatus.NOT_FOUND) {
-                return Optional.empty();
-
-            } else throw new RuntimeException("Api error");
-
-        } catch (HttpClientErrorException exception) {
-            throw new RuntimeException("http error" + exception.getStatusCode());
-        } catch (RuntimeException exception) {
-            throw new RuntimeException("Api error: " + exception.getMessage());
+            return restTemplate.getForEntity(url, NewsAPIResponseDTO[].class);
+        }
+        catch (ApiFailedException apiFailedException) {
+            throw new ApiFailedException("http error: " + apiFailedException.getStatusCode(), apiFailedException);
+        }
+        catch (ApiFailedException apiFailedException) {
+            throw new ApiFailedException("api error: ", + apiFailedException.getMessage(), apiFailedException);
         }
     }
 
-    private NewsItem toNewsItem(NewsAPIResponseDTO apiResponseDTO) {
-        return mapper.convertValue(apiResponseDTO, NewsItem.class);
+
+
+    private NewsItem toNewsItem(NewsAPIResponseDTO newsAPIResponseDTO) {
+        return mapper.convertValue(newsAPIResponseDTO, NewsItem.class);
     }
+
+
+
 }
