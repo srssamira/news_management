@@ -2,9 +2,9 @@ package com.news_management.br.news_management.domain.usecases.impl;
 
 import com.news_management.br.news_management.domain.dtos.NewsVerificationRequestDTO;
 import com.news_management.br.news_management.domain.dtos.NewsVerificationResponseDTO;
-import com.news_management.br.news_management.domain.usecases.NewsVerificatoinUseCase;
+import com.news_management.br.news_management.domain.usecases.NewsVerificationUseCase;
 
-public class NewsVerificationUseCaseImpl implements NewsVerificatoinUseCase {
+public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
     public NewsVerificationResponseDTO verifyNews(NewsVerificationRequestDTO request, String url) {
         int score = 0;
         String classification;
