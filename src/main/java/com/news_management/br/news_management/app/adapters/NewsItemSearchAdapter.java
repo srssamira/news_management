@@ -5,9 +5,11 @@ import com.news_management.br.news_management.app.infra.NewsItemRepository;
 import com.news_management.br.news_management.app.infra.NewsNotFoundException;
 import com.news_management.br.news_management.domain.dtos.NewsItemSearchDTO;
 import com.news_management.br.news_management.domain.models.NewsItem;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class NewsItemSearchAdapter {
 
     private final NewsItemRepository newsItemRepository;
