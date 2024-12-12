@@ -1,3 +1,5 @@
+package com.news_management.br.news_management.UseCase;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.news_management.br.news_management.domain.dtos.NewsVerificationRequestDTO;
