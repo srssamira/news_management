@@ -1,0 +1,8 @@
+spring:
+  application:
+  name: news_management
+  datasource:
+    url: jdbc:postgresql://${BD_HOST}:${BD_PORT}/${BD_NAME}
+    username: ${BD_USERNAME}
+    password: ${BD_PASSWORD}
+    driver-class-name: org.postgresql.Driver
