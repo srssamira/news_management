@@ -1,37 +1,55 @@
 package com.news_management.br.news_management.domain.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 
 public class NewsAPIResponseDTO {
+    private Integer id;
+    private String link;
+    private String titulo;
+    private String introducao;
+    private String data_publicacao;
 
-    private String url;
-    private String text;
-    private LocalDate publicationDate;
 
-    public NewsAPIResponseDTO() {
+    public String getLink() {
+        return link;
     }
 
-    public String getUrl() {
-        return url;
+    public void setLink(String link) {
+        this.link = link;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+
+    public Integer getId() {
+        return id;
     }
 
-    public String getText() {
-        return text;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public String getTitulo() {
+        return titulo;
     }
 
-    public LocalDate getPublicationDate() {
-        return publicationDate;
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
-    public void setPublicationDate(LocalDate publicationDate) {
-        this.publicationDate = publicationDate;
+    public String getIntroducao() {
+        return introducao;
+    }
+
+    public void setIntroducao(String introducao) {
+        this.introducao = introducao;
+    }
+
+    public String getData_publicacao() {
+        return data_publicacao;
+    }
+
+    public void setData_publicacao(String data_publicacao) {
+        this.data_publicacao = data_publicacao;
     }
 }
