@@ -38,4 +38,13 @@ public class NewsRegisterDTOTest {
         assertEquals("The publication date is invalid.", exception.getMessage());
     }
 
+    @Test
+    void shouldCreateValidNewsRegisterDTO() {
+
+        NewsRegisterDTO dto = new NewsRegisterDTO("http://valid.url", "Valid text", LocalDate.now());
+
+        assertEquals("http://valid.url", dto.getUrl());
+        assertEquals("Valid text", dto.getText());
+        assertEquals(LocalDate.now(), dto.getPublicationDate());
+    }
 }
