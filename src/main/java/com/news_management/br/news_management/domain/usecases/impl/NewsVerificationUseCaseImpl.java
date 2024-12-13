@@ -5,6 +5,7 @@ import com.news_management.br.news_management.domain.dtos.NewsVerificationRespon
 import com.news_management.br.news_management.domain.usecases.NewsVerificationUseCase;
 
 public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
+
     public NewsVerificationResponseDTO verifyNews(NewsVerificationRequestDTO request, String url) {
         int score = 0;
         String classification;
@@ -24,7 +25,7 @@ public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
         if (request.isHaveTrustedSource()) {
             score += 5;
         } else {
-            score = score - 3;
+
         }
 
         if (request.isHaveSensacionalistLanguage()) {
