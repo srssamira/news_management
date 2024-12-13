@@ -19,6 +19,7 @@ public class NewsRegisterDTOTest {
 
         assertEquals("The 'url' field is mandatory.", exception.getMessage());
     }
+
     @Test
     void shouldThrowExceptionWhenTextIsBlank() {
 
@@ -27,4 +28,14 @@ public class NewsRegisterDTOTest {
 
         assertEquals("The 'text' field is mandatory.", exception.getMessage());
     }
+
+    @Test
+    void shouldThrowExceptionWhenPublicationDateIsInTheFuture() {
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                new NewsRegisterDTO("http://valid.url", "Valid text", LocalDate.now().plusDays(1)));
+
+        assertEquals("The publication date is invalid.", exception.getMessage());
+    }
+
 }
