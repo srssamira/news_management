@@ -59,4 +59,3 @@ public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
         }
     }
 }
-
