@@ -20,9 +20,17 @@ public class NewsRegisterAdapter {
         newsItem.setText(newsRegisterDTO.getText());
         newsItem.setPublicationDate(newsRegisterDTO.getPublicationDate());
 
-    }
+
 
     private NewsItem newsItem;
     NewsItem savedNewsItem = newsItemRepository.save(newsItem);
 
+     if(savedNewsItem ==null||savedNewsItem.getId()==null)
+
+    {
+        throw new NullPointerException("Falha ao salvar o item de notícia.");
+    }
+
+        return savedNewsItem.getId();
+    }
 }
