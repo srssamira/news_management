@@ -6,9 +6,21 @@ import com.news_management.br.news_management.domain.usecases.NewsVerificationUs
 
 public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
 
+    @Override
     public NewsVerificationResponseDTO verifyNews(NewsVerificationRequestDTO request, String url) {
+        int score = calculateScore(request);
+        String classification = finalClassification(score);
+
+        NewsVerificationResponseDTO answer = new NewsVerificationResponseDTO();
+        answer.setClassification(classification);
+        answer.setScore(score);
+        answer.setUrl(url);
+
+        return answer;
+    }
+
+    private int calculateScore(NewsVerificationRequestDTO request) {
         int score = 0;
-        String classification;
 
         if (request.isHaveCommunicationVehicle()) {
             score += 3;
@@ -29,24 +41,21 @@ public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
         }
 
         if (request.isHaveSensacionalistLanguage()) {
-            score = score - 3;
+            score -= 3;
         }
 
+        return score;
+    }
+
+    private String finalClassification(int score) {
         if (score >= 8) {
-            classification = "HIGH CONFIDENCE";
+            return "HIGH CONFIDENCE";
         } else if (score >= 3) {
-            classification = "MEDIUM CONFIDENCE";
+            return "MEDIUM CONFIDENCE";
         } else if (score >= -2) {
-            classification = "LOW CONFIDENCE";
+            return "LOW CONFIDENCE";
         } else {
-            classification = "HIGH SUSPICION";
+            return "HIGH SUSPICION";
         }
-
-        NewsVerificationResponseDTO answer = new NewsVerificationResponseDTO();
-        answer.setClassification(classification);
-        answer.setScore(score);
-        answer.setUrl(url);
-
-        return answer;
     }
 }
