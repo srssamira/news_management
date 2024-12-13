@@ -2,12 +2,18 @@ package com.news_management.br.news_management.domain.dtos;
 
 import java.time.LocalDate;
 
+import static sun.security.util.KeyUtil.validate;
+
 public class NewsRegisterDTO {
     private String url;
     private String text;
     private LocalDate publicationDate;
 
-    public NewsRegisterDTO() {
+    public NewsRegisterDTO(String url, String text, LocalDate publicationDate) {
+        this.url = url;
+        this.text = text;
+        this.publicationDate = publicationDate;
+        validate();
     }
 
     public String getUrl() {
