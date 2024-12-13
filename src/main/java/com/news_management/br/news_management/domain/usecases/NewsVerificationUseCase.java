@@ -5,4 +5,5 @@ import com.news_management.br.news_management.domain.dtos.NewsVerificationRespon
 
 public interface NewsVerificationUseCase {
     NewsVerificationResponseDTO verifyNews(NewsVerificationRequestDTO request, String url);
+
 }

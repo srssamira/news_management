@@ -25,7 +25,7 @@ public class NewsVerificationUseCaseImpl implements NewsVerificationUseCase {
         if (request.isHaveTrustedSource()) {
             score += 5;
         } else {
-            score -= 3;
+
         }
 
         if (request.isHaveSensacionalistLanguage()) {
