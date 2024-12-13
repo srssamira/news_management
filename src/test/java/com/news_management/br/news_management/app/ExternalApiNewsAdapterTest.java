@@ -2,6 +2,7 @@ package com.news_management.br.news_management.app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.news_management.br.news_management.app.adapters.ExternalApiNewsAdapter;
+import com.news_management.br.news_management.domain.dtos.ApiReceivedDataDTO;
 import com.news_management.br.news_management.domain.dtos.NewsAPIResponseDTO;
 import com.news_management.br.news_management.domain.models.NewsItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,29 +37,31 @@ public class ExternalApiNewsAdapterTest {
 
     private NewsAPIResponseDTO apiResponse;
 
+    private ApiReceivedDataDTO apiReceivedDataDTO;
+
     @BeforeEach
     void setUp() {
         apiResponse = new NewsAPIResponseDTO();
-        apiResponse.setUrl("https://newsapi.com/");
-        apiResponse.setText("Bolsonaro foi preso");
-        apiResponse.setPublicationDate(LocalDate.now());
+        apiResponse.setLink("https://newsapi.com/");
+        apiResponse.setIntroducao("Bolsonaro foi preso");
+        apiResponse.setData_publicacao("12/12/2024 09:00:00");
 
         newsItem = new NewsItem();
         newsItem.setUrl("https://newsapi.com/");
         newsItem.setText("Bolsonaro foi preso");
         newsItem.setPublicationDate(LocalDate.now());
+
+        apiReceivedDataDTO = new ApiReceivedDataDTO();
+        apiReceivedDataDTO.setItems(Collections.singletonList(apiResponse));
+
     }
 
     @Test
     void testWhenNewsHasFoundWithSuccess() {
-        NewsAPIResponseDTO[] apiResponses = { apiResponse };
-        ResponseEntity<NewsAPIResponseDTO[]> responseEntity = ResponseEntity.ok(apiResponses);
+        ResponseEntity<ApiReceivedDataDTO> responseEntity = ResponseEntity.ok(apiReceivedDataDTO);
 
-        when(restTemplate.getForEntity(anyString(), eq(NewsAPIResponseDTO[].class)))
+        when(restTemplate.getForEntity(anyString(), eq(ApiReceivedDataDTO.class)))
                 .thenReturn(responseEntity);
-
-        when(mapper.convertValue(any(NewsAPIResponseDTO.class), eq(NewsItem.class)))
-                .thenReturn(newsItem);
 
         Optional<NewsItem> newsItemOptional = apiNewsAdapter.findNewsItemByKeyword("preso");
 
@@ -67,22 +69,23 @@ public class ExternalApiNewsAdapterTest {
         assertEquals(newsItem.getUrl(), newsItemOptional.get().getUrl());
         assertEquals(newsItem.getText(), newsItemOptional.get().getText());
         assertEquals(newsItem.getPublicationDate(), newsItemOptional.get().getPublicationDate());
-
-        verify(restTemplate, times(1)).getForEntity(anyString(), eq(NewsAPIResponseDTO[].class));
-        verify(restTemplate, times(1)).getForEntity(anyString(), eq(NewsAPIResponseDTO[].class));
-        verify(mapper, times(1)).convertValue(any(NewsAPIResponseDTO.class), eq(NewsItem.class));
     }
 
     @Test
     void testWhenNewsHasNotFound() throws Exception {
-        ResponseEntity<NewsAPIResponseDTO[]> apiResponses = ResponseEntity.notFound().build();
+        ResponseEntity<ApiReceivedDataDTO> apiResponses = ResponseEntity.notFound().build();
 
-        when(restTemplate.getForEntity(anyString(), eq(NewsAPIResponseDTO[].class)))
+        when(restTemplate.getForEntity(anyString(), eq(ApiReceivedDataDTO.class)))
             .thenReturn(apiResponses);
 
         Optional<NewsItem> newsItemOptional = apiNewsAdapter.findNewsItemByKeyword("preso");
 
-        assertThrows(RuntimeException.class, () -> newsItemOptional.get());
+        assertFalse(newsItemOptional.isPresent());
+        verify(restTemplate, times(1))
+                .getForEntity(anyString(), eq(ApiReceivedDataDTO.class));
+        verify(mapper, never())
+                .convertValue(any(NewsAPIResponseDTO.class), eq(NewsItem.class));
     }
+
 
 }

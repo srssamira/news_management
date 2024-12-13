@@ -42,3 +42,4 @@ public class NewsVerificationResponseDTO {
         this.url = url;
     }
 }
+  
