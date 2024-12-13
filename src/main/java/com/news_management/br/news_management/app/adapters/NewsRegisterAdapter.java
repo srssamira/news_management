@@ -22,4 +22,7 @@ public class NewsRegisterAdapter {
 
     }
 
+    private NewsItem newsItem;
+    NewsItem savedNewsItem = newsItemRepository.save(newsItem);
+
 }
