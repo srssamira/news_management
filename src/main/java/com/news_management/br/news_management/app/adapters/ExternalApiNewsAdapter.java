@@ -5,6 +5,7 @@ import com.news_management.br.news_management.app.infra.ApiFailedException;
 import com.news_management.br.news_management.domain.dtos.ApiReceivedDataDTO;
 import com.news_management.br.news_management.domain.dtos.NewsAPIResponseDTO;
 import com.news_management.br.news_management.domain.models.NewsItem;
+import com.news_management.br.news_management.domain.usecases.NewsSearchUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -22,11 +23,13 @@ public class ExternalApiNewsAdapter {
     private static final String URL_API = "http://servicodados.ibge.gov.br/api/v3/noticias/";
     private final RestTemplate restTemplate;
     private final ObjectMapper mapper;
+    private final NewsSearchUseCase newsSearchUseCase;
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    public ExternalApiNewsAdapter(RestTemplate restTemplate, ObjectMapper mapper) {
+    public ExternalApiNewsAdapter(RestTemplate restTemplate, ObjectMapper mapper, NewsSearchUseCase newsSearchUseCase) {
         this.restTemplate = restTemplate;
         this.mapper = mapper;
+        this.newsSearchUseCase = newsSearchUseCase;
     }
 
 
@@ -34,7 +37,7 @@ public class ExternalApiNewsAdapter {
     public Optional<NewsItem> findNewsItemByKeyword(String keyword) {
         String url = buildUrlApi(keyword);
         ResponseEntity<ApiReceivedDataDTO> apiResponse = searchNewsFromApi(url);
-        return checkApiResponse(apiResponse);
+        return checkApiResponse(apiResponse, keyword);
     }
 
 
@@ -48,7 +51,7 @@ public class ExternalApiNewsAdapter {
 
 
 
-    private Optional<NewsItem> checkApiResponse(ResponseEntity<ApiReceivedDataDTO> apiResponse) {
+    private Optional<NewsItem> checkApiResponse(ResponseEntity<ApiReceivedDataDTO> apiResponse, String keyword) {
 
         if (apiResponse == null || apiResponse.getBody() == null
         || apiResponse.getBody().getItems() == null)
@@ -58,18 +61,10 @@ public class ExternalApiNewsAdapter {
 
         if (responseHttpStatus.is2xxSuccessful()) {
             List<NewsAPIResponseDTO> apiResponseDTOS = apiResponse.getBody().getItems();
-
-            if (apiResponseDTOS.size() > 0)
-                return Optional.of(toNewsItem(apiResponseDTOS.get(0)));
-
-            else
-                return Optional.empty();
+            return newsSearchUseCase.findKeywordWithinTheIntroductionApiNews(apiResponseDTOS, keyword);
         }
-
         else if (responseHttpStatus.is4xxClientError())
             return Optional.empty();
-
-
         else
             throw new ApiFailedException("Api error with satus code: " + responseHttpStatus);
     }
