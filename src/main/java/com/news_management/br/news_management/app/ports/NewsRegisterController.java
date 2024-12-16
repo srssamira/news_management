@@ -22,6 +22,7 @@ public class NewsRegisterController {
 
     @PostMapping
     public ResponseEntity<?> registerNews(@RequestBody NewsRegisterDTO newsRegisterDTO) {
+
         try {
 
             NewsItem registeredNews = newsRegisterAdapter.registerNews(newsRegisterDTO);
@@ -31,7 +32,8 @@ public class NewsRegisterController {
         } catch (IllegalArgumentException e) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error: Invalid news data. " + e.getMessage());
+                    .body("Error: Invalid news data " + e.getMessage());
+
         } catch (Exception e) {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
